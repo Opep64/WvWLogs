@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>WvW Analyst Top 5 Reports</title>
+  <title>WvW Logs</title>
   <style>
     :root {
       color-scheme: dark;
@@ -67,7 +67,7 @@
     }
 
     .intro {
-      max-width: 720px;
+      max-width: 760px;
       margin: 0;
       color: var(--muted);
       font-size: 1.04rem;
@@ -104,15 +104,14 @@
     }
 
     .base-link:hover,
-    .report-link:hover {
+    .log-link:hover {
       border-color: var(--accent);
       color: var(--accent-strong);
     }
 
-    .sections {
+    .content {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 22px;
+      gap: 34px;
     }
 
     section {
@@ -129,21 +128,52 @@
 
     h2 {
       margin: 0;
-      font-size: 1.24rem;
+      font-size: 1.3rem;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1.08rem;
       letter-spacing: 0;
     }
 
     .count {
       color: var(--muted);
       font-size: 0.9rem;
+      white-space: nowrap;
     }
 
-    .reports {
+    .month-panels,
+    .logs {
+      display: grid;
+      gap: 12px;
+    }
+
+    .month-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(24, 29, 35, 0.72);
+      overflow: hidden;
+    }
+
+    .month-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(32, 38, 46, 0.72);
+    }
+
+    .month-reports {
       display: grid;
       gap: 10px;
+      padding: 12px;
     }
 
-    .report-link {
+    .log-link {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 16px;
@@ -157,17 +187,21 @@
       transition: border-color 140ms ease, color 140ms ease, transform 140ms ease;
     }
 
-    .report-link:hover {
+    .month-panel .log-link {
+      background: rgba(16, 19, 23, 0.52);
+    }
+
+    .log-link:hover {
       transform: translateY(-1px);
     }
 
-    .report-title {
+    .log-title {
       min-width: 0;
       font-weight: 760;
       overflow-wrap: anywhere;
     }
 
-    .report-file {
+    .log-file {
       display: block;
       margin-top: 4px;
       color: var(--muted);
@@ -176,7 +210,7 @@
       overflow-wrap: anywhere;
     }
 
-    .report-kind {
+    .log-kind {
       justify-self: end;
       padding: 5px 9px;
       border-radius: 999px;
@@ -207,6 +241,7 @@
       border-top: 1px solid var(--line);
       color: var(--muted);
       font-size: 0.9rem;
+      line-height: 1.6;
     }
 
     @media (max-width: 760px) {
@@ -215,16 +250,19 @@
         padding-top: 30px;
       }
 
-      .sections {
-        grid-template-columns: 1fr;
+      .section-head,
+      .month-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
       }
 
-      .report-link {
+      .log-link {
         grid-template-columns: 1fr;
         gap: 10px;
       }
 
-      .report-kind {
+      .log-kind {
         justify-self: start;
       }
     }
@@ -234,38 +272,40 @@
   <main class="shell">
     <header>
       <p class="eyebrow">Guild Wars 2 WvW logs</p>
-      <h1>WvW Analyst Top 5</h1>
+      <h1>WvW Logs</h1>
       <p class="intro">
-        Weekly and monthly top-5 report pages published from this repository.
+        Top-5 WvW Analyst reports and individual fight logs published from this repository.
       </p>
     </header>
 
     <div class="toolbar">
-      <div id="status" class="status">Loading reports...</div>
+      <div id="status" class="status">Loading logs...</div>
       <a class="base-link" href="https://opep64.github.io/WvWLogs">Open site root</a>
     </div>
 
-    <div class="sections" aria-live="polite">
+    <div class="content" aria-live="polite">
       <section>
         <div class="section-head">
-          <h2>Weekly Reports</h2>
-          <span id="weekly-count" class="count"></span>
+          <h2>Top 5 Reports</h2>
+          <span id="top-count" class="count"></span>
         </div>
-        <div id="weekly-reports" class="reports"></div>
+        <div id="top-reports" class="month-panels"></div>
       </section>
 
       <section>
         <div class="section-head">
-          <h2>Monthly Reports</h2>
-          <span id="monthly-count" class="count"></span>
+          <h2>Individual Fights</h2>
+          <span id="fight-count" class="count"></span>
         </div>
-        <div id="monthly-reports" class="reports"></div>
+        <div id="fight-logs" class="logs"></div>
       </section>
     </div>
 
     <footer>
-      Reports are discovered from files named like <strong>wvwanalyst-top-5-week-of-may-1-2026.html</strong>
-      and <strong>wvwanalyst-top-5-april-2026.html</strong>.
+      Top-5 reports are discovered from files named like
+      <strong>wvwanalyst-top-5-week-of-may-1-2026.html</strong> and
+      <strong>wvwanalyst-top-5-april-2026.html</strong>. Individual fight logs are discovered from
+      files named like <strong>20260513-213239_detailed_wvw_kill.html</strong>.
     </footer>
   </main>
 
@@ -292,13 +332,39 @@
       ["december", 11]
     ]);
 
+    const monthLabels = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ];
+
+    const plural = (count, singular, pluralName = `${singular}s`) =>
+      `${count} ${count === 1 ? singular : pluralName}`;
+
     const titleCase = (value) => value
       .split("-")
       .filter(Boolean)
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" ");
 
-    function parseReport(fileName) {
+    const monthKey = (year, monthIndex) =>
+      `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+
+    function monthLabelFromKey(key) {
+      const [year, month] = key.split("-").map(Number);
+      return `${monthLabels[month - 1]} ${year}`;
+    }
+
+    function parseTopReport(fileName) {
       const lowerName = fileName.toLowerCase();
 
       if (!/^wvwanalyst-top-5-.*\.html$/.test(lowerName)) {
@@ -309,14 +375,17 @@
       if (weekMatch) {
         const [, month, day, year] = weekMatch;
         const monthIndex = monthNames.get(month);
-        const sortDate = monthIndex === undefined
-          ? new Date(0)
-          : new Date(Number(year), monthIndex, Number(day));
+        if (monthIndex === undefined) {
+          return null;
+        }
 
+        const sortDate = new Date(Number(year), monthIndex, Number(day));
         return {
           fileName,
           kind: "weekly",
+          badge: "Week",
           title: `Week of ${titleCase(month)} ${Number(day)}, ${year}`,
+          monthKey: monthKey(Number(year), monthIndex),
           sortTime: sortDate.getTime()
         };
       }
@@ -325,80 +394,174 @@
       if (monthMatch) {
         const [, month, year] = monthMatch;
         const monthIndex = monthNames.get(month);
-        const sortDate = monthIndex === undefined
-          ? new Date(0)
-          : new Date(Number(year), monthIndex, 1);
+        if (monthIndex === undefined) {
+          return null;
+        }
 
+        const sortDate = new Date(Number(year), monthIndex, 1);
         return {
           fileName,
           kind: "monthly",
-          title: `${titleCase(month)} ${year}`,
+          badge: "Month",
+          title: "Overall monthly top 5",
+          monthKey: monthKey(Number(year), monthIndex),
           sortTime: sortDate.getTime()
         };
       }
 
+      return null;
+    }
+
+    function parseFightLog(fileName) {
+      const match = fileName.match(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})_detailed_wvw_kill\.html$/i);
+      if (!match) {
+        return null;
+      }
+
+      const [, year, month, day, hour, minute, second] = match;
+      const monthIndex = Number(month) - 1;
+      const sortDate = new Date(
+        Number(year),
+        monthIndex,
+        Number(day),
+        Number(hour),
+        Number(minute),
+        Number(second)
+      );
+
       return {
         fileName,
-        kind: "other",
-        title: fileName.replace(/^wvwanalyst-top-5-/i, "").replace(/\.html$/i, ""),
-        sortTime: 0
+        kind: "fight",
+        badge: "Fight",
+        title: `${monthLabels[monthIndex]} ${Number(day)}, ${year} at ${hour}:${minute}:${second}`,
+        sortTime: sortDate.getTime()
       };
     }
 
-    function reportLink(report) {
+    function logLink(log) {
       const link = document.createElement("a");
-      link.className = "report-link";
-      link.href = `${BASE_URL}/${encodeURIComponent(report.fileName)}`;
+      link.className = "log-link";
+      link.href = `${BASE_URL}/${encodeURIComponent(log.fileName)}`;
 
       const label = document.createElement("span");
-      label.className = "report-title";
-      label.textContent = report.title;
+      label.className = "log-title";
+      label.textContent = log.title;
 
       const file = document.createElement("span");
-      file.className = "report-file";
-      file.textContent = report.fileName;
+      file.className = "log-file";
+      file.textContent = log.fileName;
       label.appendChild(file);
 
       const kind = document.createElement("span");
-      kind.className = "report-kind";
-      kind.textContent = report.kind === "weekly" ? "Week" : "Month";
+      kind.className = "log-kind";
+      kind.textContent = log.badge;
 
       link.append(label, kind);
       return link;
     }
 
-    function renderReports(reports) {
-      const weekly = reports
-        .filter((report) => report.kind === "weekly")
-        .sort((a, b) => b.sortTime - a.sortTime || a.fileName.localeCompare(b.fileName));
-
-      const monthly = reports
-        .filter((report) => report.kind === "monthly")
-        .sort((a, b) => b.sortTime - a.sortTime || a.fileName.localeCompare(b.fileName));
-
-      renderSection("weekly-reports", "weekly-count", weekly, "No weekly top-5 reports found yet.");
-      renderSection("monthly-reports", "monthly-count", monthly, "No monthly top-5 reports found yet.");
-    }
-
-    function renderSection(containerId, countId, reports, emptyText) {
-      const container = document.getElementById(containerId);
-      const count = document.getElementById(countId);
+    function renderTopReports(reports) {
+      const container = document.getElementById("top-reports");
+      const count = document.getElementById("top-count");
+      const groups = new Map();
 
       container.replaceChildren();
-      count.textContent = `${reports.length} ${reports.length === 1 ? "report" : "reports"}`;
+      count.textContent = plural(reports.length, "report");
 
-      if (reports.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = emptyText;
-        container.appendChild(empty);
+      reports.forEach((report) => {
+        if (!groups.has(report.monthKey)) {
+          groups.set(report.monthKey, {
+            key: report.monthKey,
+            monthly: null,
+            weeklies: []
+          });
+        }
+
+        const group = groups.get(report.monthKey);
+        if (report.kind === "monthly") {
+          group.monthly = report;
+        } else {
+          group.weeklies.push(report);
+        }
+      });
+
+      const sortedGroups = [...groups.values()]
+        .sort((a, b) => b.key.localeCompare(a.key));
+
+      if (sortedGroups.length === 0) {
+        container.appendChild(emptyState("No top-5 reports found yet."));
         return;
       }
 
-      reports.forEach((report) => container.appendChild(reportLink(report)));
+      sortedGroups.forEach((group) => {
+        const panel = document.createElement("article");
+        panel.className = "month-panel";
+
+        const head = document.createElement("div");
+        head.className = "month-head";
+
+        const heading = document.createElement("h3");
+        heading.textContent = monthLabelFromKey(group.key);
+
+        const reportsInMonth = [
+          ...(group.monthly ? [group.monthly] : []),
+          ...group.weeklies.sort((a, b) => b.sortTime - a.sortTime || a.fileName.localeCompare(b.fileName))
+        ];
+
+        const groupCount = document.createElement("span");
+        groupCount.className = "count";
+        groupCount.textContent = plural(reportsInMonth.length, "report");
+
+        const reportList = document.createElement("div");
+        reportList.className = "month-reports";
+        reportsInMonth.forEach((report) => reportList.appendChild(logLink(report)));
+
+        head.append(heading, groupCount);
+        panel.append(head, reportList);
+        container.appendChild(panel);
+      });
     }
 
-    async function loadReports() {
+    function renderFightLogs(fights) {
+      const container = document.getElementById("fight-logs");
+      const count = document.getElementById("fight-count");
+
+      container.replaceChildren();
+      count.textContent = plural(fights.length, "fight");
+
+      if (fights.length === 0) {
+        container.appendChild(emptyState("No individual fight logs found yet."));
+        return;
+      }
+
+      fights
+        .sort((a, b) => b.sortTime - a.sortTime || b.fileName.localeCompare(a.fileName))
+        .forEach((fight) => container.appendChild(logLink(fight)));
+    }
+
+    function emptyState(message) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = message;
+      return empty;
+    }
+
+    function renderFiles(fileNames) {
+      const topReports = fileNames
+        .map(parseTopReport)
+        .filter(Boolean);
+
+      const fightLogs = fileNames
+        .map(parseFightLog)
+        .filter(Boolean);
+
+      renderTopReports(topReports);
+      renderFightLogs(fightLogs);
+
+      return topReports.length + fightLogs.length;
+    }
+
+    async function loadLogs() {
       const status = document.getElementById("status");
 
       try {
@@ -411,24 +574,19 @@
         }
 
         const files = await response.json();
-        const reports = files
+        const fileNames = files
           .filter((item) => item.type === "file")
-          .map((item) => parseReport(item.name))
-          .filter(Boolean);
+          .map((item) => item.name);
 
-        renderReports(reports);
-        status.textContent = `Loaded ${reports.length} report ${reports.length === 1 ? "file" : "files"} from GitHub.`;
+        const total = renderFiles(fileNames);
+        status.textContent = `Loaded ${plural(total, "matching file")} from GitHub.`;
       } catch (error) {
-        const fallbackReports = FALLBACK_FILES
-          .map(parseReport)
-          .filter(Boolean);
-
-        renderReports(fallbackReports);
-        status.innerHTML = `<span class="warning">Live report discovery failed.</span> Showing the checked-in fallback links.`;
+        const total = renderFiles(FALLBACK_FILES);
+        status.innerHTML = `<span class="warning">Live log discovery failed.</span> Showing ${plural(total, "fallback link")}.`;
       }
     }
 
-    loadReports();
+    loadLogs();
   </script>
 </body>
 </html>
